@@ -1,16 +1,18 @@
 // Quick'n dirty Ammonite script that takes the Scala tour markdown files and converts them to Jupyter notebooks.
+// Requires the Python library notedown on the path. Install e.g. with pip install notedown
 // Usage: amm scala-tour-importer.sc <input_dir> <output_dir>
 
 import ammonite.ops._
 import ammonite.ops.ImplicitWd._
 
 /**
-  * @param source path to local copy of https://github.com/scala/docs.scala-lang
+  * @param inputDir path to local copy of https://github.com/scala/docs.scala-lang
+  * @param outputDir where to write the Jupyter notebooks
   */
 @main
-def main(source: String, destination: String): Unit = {
+def main(inputDir: Path, outputDir: Path): Unit = {
   val temp = tmp.dir()
-  val filenames = ls! Path(source, pwd)/"_tour" |? (_.last.endsWith(".md"))
+  val filenames = ls! Path(inputDir, pwd)/"_tour" |? (_.last.endsWith(".md"))
   filenames.foreach {
     filename => {
       val lines = read.lines(filename)
@@ -18,7 +20,9 @@ def main(source: String, destination: String): Unit = {
       val content = lines.drop(1).dropWhile(_ != "---").drop(1)
       val modifiedMD = temp / filename.last
       write(modifiedMD, (transformedHeader ++ content).mkString("\n"))
-      %("notedown", modifiedMD, "-o", Path(destination, pwd)/modifiedMD.last.stripSuffix("md") + "ipynb")
+      val outputPath = Path(outputDir, pwd)/(modifiedMD.last.stripSuffix("md") + "ipynb")
+      %("notedown", modifiedMD, "-o", outputPath)
+      addKernel(outputPath)
     }
   }
 }
@@ -46,4 +50,27 @@ def transformMetadata(metadata: Map[String, String]) = {
     Seq("""<div style="clear: both;"></div>""", "")
 }
 
-// TODO add Scala Kernel
+def addKernel(file: Path) = {
+  val metadata = ujson.read(
+    """
+      |{
+      |  "kernelspec": {
+      |    "display_name": "Scala",
+      |    "language": "scala",
+      |    "name": "scala"
+      |  },
+      |  "language_info": {
+      |    "codemirror_mode": "text/x-scala",
+      |    "file_extension": ".scala",
+      |    "mimetype": "text/x-scala",
+      |    "name": "scala",
+      |    "nbconvert_exporter": "script",
+      |    "version": "2.12.7"
+      |  }
+      |}
+    """.stripMargin
+  )
+  val notebook = ujson.read(file.toNIO)
+  notebook("metadata") = metadata
+  write.over(file, ujson.write(notebook))
+}
