@@ -86,5 +86,5 @@ def addKernel(file: Path) = {
   )
   val notebook = ujson.read(file.toNIO)
   notebook("metadata") = metadata
-  write.over(file, ujson.write(notebook))
+  write.over(file, ujson.write(notebook, indent = 1))
 }
