@@ -15,13 +15,14 @@ def main(inputDir: Path, outputDir: Path): Unit = {
   val filenames = ls! Path(inputDir, pwd)/"_tour" |? (_.last.endsWith(".md"))
   filenames.foreach {
     filename => {
+      println(s"converting ${filename.last}")
       val lines = read.lines(filename)
-      val transformedHeader = transformMetadata(extractMetadata(lines))
-      val content = lines.drop(1).dropWhile(_ != "---").drop(1)
-      val modifiedMD = temp / filename.last
-      write(modifiedMD, (transformedHeader ++ content).mkString("\n"))
-      val outputPath = Path(outputDir, pwd)/(modifiedMD.last.stripSuffix("md") + "ipynb")
-      %("notedown", modifiedMD, "-o", outputPath)
+      val (header, footer) = transformMetadata(extractMetadata(lines))
+      val content = transformContent(lines.drop(1).dropWhile(_ != "---").drop(1))
+      val tempMDPath = temp / filename.last
+      write(tempMDPath, (header ++ content ++ footer).mkString("\n"))
+      val outputPath = Path(outputDir, pwd)/(tempMDPath.last.stripSuffix("md") + "ipynb")
+      %("notedown", tempMDPath, "-o", outputPath, "--match=tut")
       addKernel(outputPath)
     }
   }
@@ -35,19 +36,32 @@ def extractMetadata(lines: Seq[String]) = lines
   .map{ case Array(k,v) => (k,v) }.toMap
 
 def transformMetadata(metadata: Map[String, String]) = {
-  Seq("Tour of Scala", "") ++
-    metadata.get("title").map("# " + _).toSeq ++
+  val nav = {
     metadata.get("previous-page").map { previous =>
-      s"""<p style="float: left;">
-         |<a href="$previous.ipynb" target="_blank">Previous</a></p>
-         |""".stripMargin
+      s"""<p style="float: left;"><a href="$previous.ipynb" target="_blank">Previous</a></p>"""
     }.toSeq ++
     metadata.get("next-page").map { next =>
-      s"""<p style="float: right;">
-         |<a href="$next.ipynb" target="_blank">Next</a></p>
-         |""".stripMargin
+      s"""<p style="float: right;"><a href="$next.ipynb" target="_blank">Next</a></p>"""
     }.toSeq ++
+    Seq("""<p style="text-align:center;">Tour of Scala</p>""") ++
     Seq("""<div style="clear: both;"></div>""", "")
+  }
+  val header = nav ++ metadata.get("title").map("# " + _).toSeq
+  val footer = nav
+  (header, footer)
+}
+
+def transformContent(content: Seq[String]): Seq[String] = {
+  content.filterNot(line =>
+    line.contains("{% scalafiddle %}") ||
+    line.contains("{% endscalafiddle %}")
+  ).map { line => line
+    .replace("{{ site.baseurl }}", "https://docs.scala-lang.org")
+    .replace("```tut:fail", "```tut") // we also want to make executable cells from failing code
+    .replaceAll("""(\([^/].*?)\.html""", "$1.ipynb") // turn html links relative to tour into notebooks
+    .replaceAll("""(\()(\/.*?\.html)""", "$1https://docs.scala-lang.org$2") // add url prefix for links starting with /
+  }
+
 }
 
 def addKernel(file: Path) = {
