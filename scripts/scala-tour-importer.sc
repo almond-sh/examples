@@ -79,7 +79,7 @@ def addKernel(file: Path) = {
       |    "mimetype": "text/x-scala",
       |    "name": "scala",
       |    "nbconvert_exporter": "script",
-      |    "version": "2.12.7"
+      |    "version": "2.12.8"
       |  }
       |}
     """.stripMargin
