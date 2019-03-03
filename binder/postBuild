@@ -28,3 +28,35 @@ rm -f almond-scala-2.11
 
 # Install required Jupyter/JupyterLab extensions
 jupyter labextension install @jupyterlab/plotly-extension
+
+# Set indentation to two spaces
+JUPYTER_CONFIG_DIR=$(jupyter --config-dir)
+# Classic notebook
+mkdir -p $JUPYTER_CONFIG_DIR/nbconfig/
+cat > $JUPYTER_CONFIG_DIR/nbconfig/notebook.json <<- EOF
+{
+  "CodeCell": {
+    "cm_config": {
+      "indentUnit": 2
+    }
+  }
+}
+EOF
+# JupyterLab notebook
+mkdir -p $JUPYTER_CONFIG_DIR/lab/user-settings/@jupyterlab/notebook-extension/
+cat > $JUPYTER_CONFIG_DIR/lab/user-settings/@jupyterlab/notebook-extension/tracker.jupyterlab-settings <<- EOF
+{
+    "codeCellConfig": {
+      "tabSize": 2
+    }
+}
+EOF
+# JupyterLab editor
+mkdir -p $JUPYTER_CONFIG_DIR/lab/user-settings/@jupyterlab/fileeditor-extension/
+cat > $JUPYTER_CONFIG_DIR/lab/user-settings/@jupyterlab/fileeditor-extension/plugin.jupyterlab-settings <<- EOF
+{
+    "editorConfig": {
+      "tabSize": 2,
+    }
+}
+EOF
