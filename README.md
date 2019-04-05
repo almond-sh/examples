@@ -14,7 +14,7 @@ You can view the notebooks directly on GitHub, as it has a basic renderer for Ju
 
 A much better option is to render them through [nbviewer](https://nbviewer.jupyter.org/). nbviewer supports loading notebooks directly from a repo on GitHub.
 
-**[List of all notebooks in this project in nbviewer](https://nbviewer.jupyter.org/github/sbrunk/almond-examples/tree/master/notebooks)**
+**[List of all notebooks in this project in nbviewer](https://nbviewer.jupyter.org/github/almond-sh/almond-examples/tree/master/notebooks)**
 
 ## Running locally
 An even better way to learn about Jupyter and Almond is to run it locally so you can try things out for yourself.
