@@ -19,8 +19,19 @@ A much better option is to render them through [nbviewer](https://nbviewer.jupyt
 ## Running locally
 An even better way to learn about Jupyter and Almond is to run it locally so you can try things out for yourself.
 
+### Via docker
+We provide a docker image for the current almond version, based on the [latest almond docker image](https://almond.sh/docs/try-docker). Run it with
+
+```bash
+docker run -it --rm -p 8888:8888 almondsh/examples:latest
+```
+
+Then copy the URL shown in the Docker output into your browser.
+To use JupyterLab instead of the classic Notebook interface, replace *tree* with *lab* after opening the URL.
+
+### Locally on your machine
 To run these notebooks locally:
-1. Install [Jupyter Notebook](http://jupyter.org/install)
+1. Install [Jupyter Notebook](http://jupyter.org/install) or (JupyterLab)[https://jupyterlab.readthedocs.io/en/stable/]
 2. Install an [Almond kernel](https://almond.sh/docs/quick-start-install)
-3. Clone the project and run `jupyter notebook` in the project directory
+3. Clone the project and run `jupyter notebook` or `jupyter lab` in the project directory
 4. Open one of the example notebooks and play with it!
