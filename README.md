@@ -31,7 +31,7 @@ To use JupyterLab instead of the classic Notebook interface, replace *tree* with
 
 ### Locally on your machine
 To run these notebooks locally:
-1. Install [Jupyter Notebook](http://jupyter.org/install) or (JupyterLab)[https://jupyterlab.readthedocs.io/en/stable/]
+1. Install [Jupyter Notebook](http://jupyter.org/install) or [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/)
 2. Install an [Almond kernel](https://almond.sh/docs/quick-start-install)
 3. Clone the project and run `jupyter notebook` or `jupyter lab` in the project directory
 4. Open one of the example notebooks and play with it!
