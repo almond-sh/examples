@@ -2,41 +2,29 @@
 set -e
 
 # Install coursier
-curl -L -o coursier https://git.io/coursier-cli
-chmod +x coursier
+curl -fLo cs https://github.com/coursier/coursier/releases/download/v2.0.3/cs-x86_64-pc-linux
+chmod +x cs
+
+ALMOND_VERSION=0.10.8
 
 # Install almond for Scala 2.13
-SCALA_VERSION=2.13.1 ALMOND_VERSION=0.8.2
-./coursier bootstrap \
-  -r jitpack \
-  -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
-  sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
-  --sources --default=true \
-  -o almond-scala-2.13
-./almond-scala-2.13 --install --id scala213 --display-name "Scala (2.13)" \
-  --command "java -XX:MaxRAMPercentage=80.0 -jar almond-scala-2.13 --id scala213 --display-name 'Scala (2.13)'" \
-  --copy-launcher \
-  --metabrowse
-rm -f almond-scala-2.13
+./cs launch "almond:$ALMOND_VERSION" --scala 2.13.3 -- \
+  --install \
+  --id scala213 \
+  --display-name "Scala (2.13)" \
+  --env "JAVA_OPTS=-XX:MaxRAMPercentage=80.0"
 
 # Install almond for Scala 2.12
-SCALA_VERSION=2.12.10 ALMOND_VERSION=0.8.2
-./coursier bootstrap \
-  -r jitpack \
-  -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
-  sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
-  --sources --default=true \
-  -o ./almond-scala-2.12
-./almond-scala-2.12 --install --id scala212 --display-name "Scala (2.12)" \
-  --command "java -XX:MaxRAMPercentage=80.0 -jar almond-scala-2.12 --id scala212 --display-name 'Scala (2.12)'" \
-  --copy-launcher \
-  --metabrowse
-rm -f almond-scala-2.12
+./cs launch "almond:$ALMOND_VERSION" --scala 2.12.12 -- \
+  --install \
+  --id scala212 \
+  --display-name "Scala (2.12)" \
+  --env "JAVA_OPTS=-XX:MaxRAMPercentage=80.0"
 
 # Install almond 0.6.0 for Scala 2.11
 # TODO remove once TransmogrifAI and vegas are updated for Scala 2.12
 SCALA_VERSION=2.11.12 ALMOND_VERSION=0.6.0
-./coursier bootstrap \
+./cs bootstrap \
   -r jitpack \
   -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
   sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
