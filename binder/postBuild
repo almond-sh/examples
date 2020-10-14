@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
 # Install coursier
 curl -L -o coursier https://git.io/coursier-cli
