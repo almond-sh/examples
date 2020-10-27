@@ -1,4 +1,4 @@
-# Almond Examples [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/almond-sh/examples/master?urlpath=lab%2Ftree%2Fnotebooks%2Findex.ipynb) [![nbviewer](https://img.shields.io/badge/view%20on-nbviewer-brightgreen.svg)](https://nbviewer.jupyter.org/github/almond-sh/almond-examples/tree/master/notebooks/index.ipynb)
+# Almond Examples [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/almond-sh/examples/master?urlpath=lab%2Ftree%2Fnotebooks%2Findex.ipynb) [![nbviewer](https://img.shields.io/badge/view%20on-nbviewer-brightgreen.svg)](https://nbviewer.jupyter.org/github/almond-sh/almond-examples/tree/master/notebooks/index.ipynb) [![Deepnote](https://deepnote.com/buttons/launch-in-deepnote-small.svg)](https://deepnote.com/project/9970220b-94df-4e6e-9695-85dda6b14c59#%2Fexamples%2Fnotebooks%2Findex.ipynb)
 
 
 A collection of [Jupyter](http://jupyter.org/) notebooks showing what you can do with the [Almond](https://almond.sh) Scala kernel.
@@ -16,6 +16,9 @@ You can view the notebooks directly on GitHub, as it has a basic renderer for Ju
 A much better option is to render them through [nbviewer](https://nbviewer.jupyter.org/). nbviewer supports loading notebooks directly from a repo on GitHub.
 
 **[List of all notebooks in this project in nbviewer](https://nbviewer.jupyter.org/github/almond-sh/almond-examples/tree/master/notebooks/index.ipynb)**
+
+## Run interactively in Deepnote
+You can also try Almond very quickly by cloning [this Deepnote project with Almond kernel and examples](https://deepnote.com/project/9970220b-94df-4e6e-9695-85dda6b14c59#%2Fexamples%2Fnotebooks%2Findex.ipynb). Deepnote offers hosted notebooks with real-time collaboration capabilities for free.
 
 ## Running locally
 An even better way to learn about Jupyter and Almond is to run it locally so you can try things out for yourself.
