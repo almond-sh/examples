@@ -12,11 +12,15 @@ RUN curl -Lo coursier https://git.io/coursier-cli && \
       -i user -I user:sh.almond:scala-kernel-api_2.13.11:0.13.11 \
       sh.almond:scala-kernel_2.13.11:0.13.11 \
       -o almond && \
-    ./almond --install --id scala --display-name "Scala" && \
+    ./almond --install --id scala213 --display-name "Scala (2.13)" && \
     rm almond coursier
 
 # Copy notebooks
 COPY --chown=1000:100 notebooks/ /home/jovyan/work/
 
+# Create missing directories to avoid errors
+RUN mkdir -p /home/jovyan/work/{scala-tour,scalameta,visualization,TransmogrifAI}
+
 # Verify installation
-RUN jupyter kernelspec list
+RUN jupyter kernelspec list && \
+    echo "Installation completed successfully!"
