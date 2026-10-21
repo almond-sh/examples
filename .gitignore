@@ -4,3 +4,9 @@
 /.idea
 .DS_Store
 /tmp
+# written by tensorflow_scala.ipynb and interactive_computing_article.ipynb
+/notebooks/tmp
+/notebooks/example.png
+# Scala CLI
+.bsp/
+.scala-build/

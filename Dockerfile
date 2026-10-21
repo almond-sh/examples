@@ -1,8 +1,32 @@
-FROM almondsh/almond:latest
+FROM almondsh/almond:0.15.0
 
 USER root
-RUN apt-get update && apt-get install -y graphviz
+# dot, used by reftree in interactive_computing_article.ipynb
+RUN apt-get -y update && \
+    apt-get install --no-install-recommends -y graphviz && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 USER $NB_UID
-RUN jupyter labextension install @jupyterlab/plotly-extension
 
-COPY --chown=1000:100 notebooks/ $HOME
+# The plotly package ships the JupyterLab extension rendering plotly-scala charts
+RUN pip install --no-cache-dir plotly==7.1.0
+
+# Spark needs these on Java 17 (see spark.ipynb). Jupyter runs the kernels with java directly,
+# which picks up JDK_JAVA_OPTIONS.
+ENV JDK_JAVA_OPTIONS="--add-opens=java.base/java.lang=ALL-UNNAMED \
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED \
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+--add-opens=java.base/java.io=ALL-UNNAMED \
+--add-opens=java.base/java.net=ALL-UNNAMED \
+--add-opens=java.base/java.nio=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED \
+--add-opens=java.base/java.util.concurrent=ALL-UNNAMED \
+--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED \
+--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED \
+--add-opens=java.base/sun.nio.ch=ALL-UNNAMED \
+--add-opens=java.base/sun.nio.cs=ALL-UNNAMED \
+--add-opens=java.base/sun.security.action=ALL-UNNAMED \
+--add-opens=java.base/sun.util.calendar=ALL-UNNAMED \
+-Djdk.reflect.useDirectMethodHandle=false"
+
+COPY --chown=${NB_UID}:${NB_GID} notebooks/ ${HOME}/
