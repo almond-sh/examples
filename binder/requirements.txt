@@ -1,3 +1,0 @@
-nbdime
-jupyterlab-git
-jupyterlab~=2.0
