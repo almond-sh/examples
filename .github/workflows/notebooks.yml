@@ -1,0 +1,79 @@
+name: Notebooks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    # weekly, to catch dependencies or external services breaking
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      notebooks: ${{ steps.list.outputs.notebooks }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: list
+        # The Scala tour notebooks are short, so they run in a single job. The other notebooks get a job each,
+        # but for the index, which has no code.
+        run: |
+          notebooks="$(
+            {
+              echo notebooks/scala-tour
+              find notebooks -name '*.ipynb' -not -path 'notebooks/scala-tour/*' -not -path notebooks/index.ipynb -not -path '*/.ipynb_checkpoints/*'
+            } | sort | jq -R . | jq -cs .
+          )"
+          echo "notebooks=$notebooks" >> "$GITHUB_OUTPUT"
+
+  run:
+    needs: list
+    name: ${{ matrix.notebook }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SCALA_CLI_VERSION: 1.18.0
+    strategy:
+      fail-fast: false
+      matrix:
+        notebook: ${{ fromJSON(needs.list.outputs.notebooks) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: ~/coursier-cache
+          key: coursier-${{ matrix.notebook }}-${{ hashFiles('Dockerfile', 'notebooks/**/*.ipynb', 'scripts/run-notebooks.sc') }}
+          restore-keys: coursier-${{ matrix.notebook }}-
+      - run: docker build -t almond-examples .
+      - name: Download Scala CLI
+        # The image doesn't have Scala CLI, so we pass it one
+        run: |
+          mkdir -p ~/scala-cli
+          curl -fL "https://github.com/VirtusLab/scala-cli/releases/download/v$SCALA_CLI_VERSION/scala-cli-x86_64-pc-linux.gz" |
+            gzip -d > ~/scala-cli/scala-cli
+          chmod +x ~/scala-cli/scala-cli
+      - name: Run notebooks
+        env:
+          NOTEBOOK: ${{ matrix.notebook }}
+        run: |
+          mkdir -p ~/coursier-cache
+          # the image runs as uid 1000, unlike the runner
+          sudo chown -R 1000:100 ~/coursier-cache
+          attempts=1
+          if [ "$NOTEBOOK" = notebooks/http.ipynb ]; then
+            # httpbin.org, queried by this notebook, is sometimes flaky
+            attempts=3
+          fi
+          # The image has its own copy of the notebooks directory, in its home directory.
+          # Scala CLI writes its build directory under /tmp, as /scripts is read-only.
+          docker run --rm \
+            -v "$PWD/scripts:/scripts:ro" \
+            -v "$HOME/scala-cli:/scala-cli:ro" \
+            -v "$HOME/coursier-cache:/coursier-cache" \
+            -e COURSIER_CACHE=/coursier-cache \
+            almond-examples \
+            /scala-cli/scala-cli --server=false --workspace /tmp/run-notebooks /scripts/run-notebooks.sc -- \
+              --attempts "$attempts" "${NOTEBOOK#notebooks/}"

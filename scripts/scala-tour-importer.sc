@@ -101,13 +101,16 @@ def transformContent(content: String): String =
     .replaceAll("""(\]\()(/[^)]*?\.html)""", "$1" + siteUrl + "$2") // add url prefix for links starting with /
 
 // executable examples (```scala mdoc, ```scala mdoc:fail, …) become code cells, the rest markdown cells
+// examples meant to fail (mdoc:fail, mdoc:crash) are tagged raises-exception, so that CI accepts their errors
+// (some mdoc:fail examples only emit a warning in almond, like the deprecation one in annotations.md: CI
+// reports those as not failing, and their tag needs to be removed by hand)
 def cells(content: String): Seq[ujson.Obj] = {
-  val codeRegex = """(?s)```scala mdoc(?::[a-z]+)?\n(.*?)\n```\n?""".r
-  def cell(cellType: String, source: String) = {
+  val codeRegex = """(?s)```scala mdoc(?::([a-z]+))?\n(.*?)\n```\n?""".r
+  def cell(cellType: String, source: String, tags: Seq[String] = Nil) = {
     val lines = source.linesWithSeparators.toSeq
     val obj = ujson.Obj(
       "cell_type" -> cellType,
-      "metadata"  -> ujson.Obj(),
+      "metadata"  -> (if (tags.isEmpty) ujson.Obj() else ujson.Obj("tags" -> ujson.Arr.from(tags.map(ujson.Str(_))))),
       "source"    -> ujson.Arr.from(lines.map(ujson.Str(_)))
     )
     if (cellType == "code") {
@@ -122,7 +125,8 @@ def cells(content: String): Seq[ujson.Obj] = {
   val builder = Seq.newBuilder[ujson.Obj]
   for (m <- codeRegex.findAllMatchIn(content)) {
     builder ++= markdown(content.substring(last, m.start))
-    builder += cell("code", m.group(1))
+    val failing = Option(m.group(1)).exists(Set("fail", "crash"))
+    builder += cell("code", m.group(2), if (failing) Seq("raises-exception") else Nil)
     last = m.end
   }
   builder ++= markdown(content.substring(last))
