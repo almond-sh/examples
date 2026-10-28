@@ -54,3 +54,12 @@ To run these notebooks locally:
    ```
 3. Clone the project and run `jupyter lab` in the `notebooks` directory
 4. Open one of the example notebooks and play with it!
+
+## Checking the notebooks
+CI runs all the notebooks in the Docker image, on each change and weekly, with the [Scala CLI](https://scala-cli.virtuslab.org)
+script [`scripts/run-notebooks.sc`](scripts/run-notebooks.sc).
+Cells showing code that doesn't compile or throws on purpose are tagged `raises-exception`: they must fail, and
+no other cell may. To run some notebooks the same way locally, with the `scala213` kernel installed as above:
+```bash
+scala-cli scripts/run-notebooks.sc -- notebooks/scala-tour notebooks/spark.ipynb
+```
