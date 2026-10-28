@@ -8,8 +8,13 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/*
 USER $NB_UID
 
-# The plotly package ships the JupyterLab extension rendering plotly-scala charts
-RUN pip install --no-cache-dir plotly==7.1.0
+# The plotly package ships the JupyterLab extension rendering plotly-scala charts.
+# numpy, pandas and matplotlib are used from Scala via ScalaPy, in scalapy.ipynb.
+RUN pip install --no-cache-dir \
+      plotly==7.1.0 \
+      numpy==2.4.6 \
+      pandas==3.1.0 \
+      matplotlib==3.11.2
 
 # Spark needs these on Java 17 (see spark.ipynb). Jupyter runs the kernels with java directly,
 # which picks up JDK_JAVA_OPTIONS.
