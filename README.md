@@ -47,7 +47,8 @@ docker run -it --rm -p 8888:8888 -e JAVA_TOOL_OPTIONS=-Xmx8g almond-examples
 
 ### Locally on your machine
 To run these notebooks locally:
-1. Install [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/) (along with the [`plotly`](https://pypi.org/project/plotly/) Python package, for plotly charts to be shown in JupyterLab)
+1. Install [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/) (along with the [`plotly`](https://pypi.org/project/plotly/) Python package, for plotly charts to be shown in JupyterLab,
+   and the `numpy`, `pandas` and `matplotlib` ones, for [the ScalaPy notebook](notebooks/scalapy.ipynb))
 2. Install an [Almond kernel](https://almond.sh/docs/quick-start-install) for Scala 2.13, with the id `scala213`, like
    ```bash
    cs launch --use-bootstrap almond:0.15.0 --scala 2.13.18 -- --install --id scala213 --display-name "Scala 2.13"
