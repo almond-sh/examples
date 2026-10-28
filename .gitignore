@@ -10,3 +10,5 @@
 # Scala CLI
 .bsp/
 .scala-build/
+# Mill
+out/

@@ -1,0 +1,65 @@
+//| mill-version: 1.3.1
+package build
+
+import mill.*
+import mill.api.BuildCtx
+
+// Each group of notebooks that CI runs in a job of its own gets a module here, whose sources are
+// the files these notebooks depend on, so that Mill selective execution can tell which groups a change
+// affects (see .github/workflows/notebooks.yml).
+// The Scala tour notebooks are short, so they make up a single group. The other notebooks get a group each,
+// but for the index, which has no code.
+// Run some notebooks locally with `./mill 'notebook[scala-tour].check'`, or all of them with `./mill __.check`.
+object notebook extends Cross[NotebookModule](NotebookModule.groups.keys.toSeq.sorted)
+
+trait NotebookModule extends Cross.Module[String] {
+  def path = NotebookModule.groups(crossValue)
+  // what CI passes to its notebook jobs
+  def ciPath = Task(path.relativeTo(BuildCtx.workspaceRoot).toString)
+
+  // The notebooks, the files next to them for notebooks in sub-directories (like
+  // scalameta/example.scala), and the files all notebook runs depend on
+  def sources = Task.Sources(
+    (Seq(path) ++ NotebookModule.siblings(path) ++ NotebookModule.common)*
+  )
+
+  // Runs the notebooks like CI does, but with the kernels installed on this machine
+  def check() = Task.Command(exclusive = true) {
+    sources()
+    val res = os.call(
+      Seq("scala-cli", "scripts/run-notebooks.sc", "--", path.toString),
+      cwd = BuildCtx.workspaceRoot,
+      stdout = os.Inherit,
+      check = false
+    )
+    if (res.exitCode != 0)
+      Task.fail(s"Running ${ciPath()} failed")
+  }
+}
+
+object NotebookModule {
+  private def notebooksDir = BuildCtx.workspaceRoot / "notebooks"
+
+  // module names, like "scala-tour" or "visualization-evilplot", and the notebooks they run
+  lazy val groups: Map[String, os.Path] = BuildCtx.watchValue {
+    val notebooks =
+      os.walk(notebooksDir, skip = p => p.last == ".ipynb_checkpoints" || p.last == "scala-tour")
+        .filter(p => p.ext == "ipynb" && p != notebooksDir / "index.ipynb")
+    (notebooksDir / "scala-tour" +: notebooks)
+      .map(p => p.relativeTo(notebooksDir).segments.mkString("-").stripSuffix(".ipynb") -> p)
+      .toMap
+  }
+
+  def siblings(path: os.Path): Seq[os.Path] =
+    if (os.isFile(path) && path / os.up != notebooksDir)
+      os.list(path / os.up).filter(p => p.ext != "ipynb" && p.last != ".ipynb_checkpoints")
+    else
+      Nil
+
+  def common = Seq(
+    BuildCtx.workspaceRoot / "build.mill",
+    BuildCtx.workspaceRoot / "Dockerfile",
+    BuildCtx.workspaceRoot / "scripts" / "run-notebooks.sc",
+    BuildCtx.workspaceRoot / ".github" / "workflows" / "notebooks.yml"
+  )
+}

@@ -63,3 +63,13 @@ no other cell may. To run some notebooks the same way locally, with the `scala21
 ```bash
 scala-cli scripts/run-notebooks.sc -- notebooks/scala-tour notebooks/spark.ipynb
 ```
+or with [Mill](https://mill-build.org), like
+```bash
+./mill 'notebook[scala-tour].check'  # notebooks/scala-tour
+./mill 'notebook[spark].check'       # notebooks/spark.ipynb
+./mill __.check                      # all of them
+```
+On PRs, CI only runs the notebooks affected by the PR, using
+[Mill selective execution](https://mill-build.org/mill/large/selective-execution.html): each module of
+[`build.mill`](build.mill) depends on the files its notebooks use, and on those all notebook runs use
+(`build.mill`, the `Dockerfile`, `scripts/run-notebooks.sc` and the CI workflow).
