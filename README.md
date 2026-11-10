@@ -3,7 +3,7 @@
 
 A collection of [Jupyter](https://jupyter.org/) notebooks showing what you can do with the [Almond](https://almond.sh) Scala kernel.
 
-The notebooks use almond 0.15.0, with Scala 2.13.
+The notebooks use almond 0.15.0 with Scala 2.13, except [the dedav4s one](notebooks/visualization/dedav4s.ipynb), that uses Scala 3.9.
 
 ## Run interactively on Binder
 The easiest way to get started is to [run the examples on Binder](https://mybinder.org/v2/gh/almond-sh/examples/main?urlpath=lab%2Ftree%2Findex.ipynb).
@@ -65,6 +65,10 @@ To run these notebooks locally:
    ```bash
    cs launch --use-bootstrap almond:0.15.0 --scala 2.13.18 -- --install --id scala213 --display-name "Scala 2.13"
    ```
+   and, for [the dedav4s notebook](notebooks/visualization/dedav4s.ipynb), one for Scala 3.9, with the id `scala39`, like
+   ```bash
+   cs launch --use-bootstrap almond:0.15.0 --scala 3.9.0 -- --install --id scala39 --display-name "Scala 3.9"
+   ```
 3. Clone the project and run `jupyter lab` in the `notebooks` directory
 4. Open one of the example notebooks and play with it!
 
@@ -72,7 +76,7 @@ To run these notebooks locally:
 CI runs all the notebooks in the Docker image, on each change and weekly, with the [Scala CLI](https://scala-cli.virtuslab.org)
 script [`scripts/run-notebooks.sc`](scripts/run-notebooks.sc).
 Cells showing code that doesn't compile or throws on purpose are tagged `raises-exception`: they must fail, and
-no other cell may. To run some notebooks the same way locally, with the `scala213` kernel installed as above:
+no other cell may. To run some notebooks the same way locally, with the kernels installed as above:
 ```bash
 scala-cli scripts/run-notebooks.sc -- notebooks/scala-tour notebooks/spark.ipynb
 ```
