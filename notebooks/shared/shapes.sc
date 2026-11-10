@@ -1,5 +1,6 @@
 // Ammonite script loaded by reusing-code.ipynb
 
+// Directives, like `//> using script`, are ignored in scripts, so this loads geometry.sc with an import $file.
 // Paths in the $file imports of a script are relative to the script, so this loads shared/geometry.sc
 import $file.geometry, geometry.{Point, distance}
 
