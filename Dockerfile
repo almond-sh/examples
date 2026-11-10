@@ -59,9 +59,13 @@ RUN pip install --no-cache-dir \
 # changed by users still take precedence.
 COPY --chown=${NB_UID}:${NB_GID} jupyter/jupyterlab-overrides.json ${CONDA_DIR}/share/jupyter/lab/settings/overrides.d/almond.json
 
-# Makes the kernels track variables from the start, for the variable inspector
+# Makes the kernels track variables from the start, for the variable inspector, and show dependency
+# downloads in the notebooks with almond's notebook coursier logger, which is off by default: a line
+# per file, with its progress, that goes away once the file is downloaded, rather than "Downloading ..."
+# and "Downloaded ..." lines on stderr that stay in the output. almond images after 0.15.0 enable the
+# latter already, so --use-notebook-coursier-logger can go once we're based on one of those.
 COPY --chown=${NB_UID}:${NB_GID} jupyter/add-kernel-options.py /tmp/add-kernel-options.py
-RUN python /tmp/add-kernel-options.py --variable-inspector && \
+RUN python /tmp/add-kernel-options.py --variable-inspector --use-notebook-coursier-logger && \
     rm -f /tmp/add-kernel-options.py
 
 # Spark needs these on Java 17 (see spark.ipynb). Jupyter runs the kernels with java directly,

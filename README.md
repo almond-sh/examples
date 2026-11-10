@@ -63,12 +63,16 @@ To run these notebooks locally:
    `pip install -r jupyter/requirements.txt` installs the JupyterLab version and extensions of the Docker image.
 2. Install an [Almond kernel](https://almond.sh/docs/quick-start-install) for Scala 2.13, with the id `scala213`, like
    ```bash
-   cs launch --use-bootstrap almond:0.15.0 --scala 2.13.18 -- --install --id scala213 --display-name "Scala 2.13"
+   cs launch --use-bootstrap almond:0.15.0 --scala 2.13.18 -- \
+     --install --id scala213 --display-name "Scala 2.13" --use-notebook-coursier-logger
    ```
    and, for [the dedav4s notebook](notebooks/visualization/dedav4s.ipynb), one for Scala 3.9, with the id `scala39`, like
    ```bash
-   cs launch --use-bootstrap almond:0.15.0 --scala 3.9.0 -- --install --id scala39 --display-name "Scala 3.9"
+   cs launch --use-bootstrap almond:0.15.0 --scala 3.9.0 -- \
+     --install --id scala39 --display-name "Scala 3.9" --use-notebook-coursier-logger
    ```
+   (`--use-notebook-coursier-logger` makes the kernels show the progress of dependency downloads in the notebooks,
+   like the Docker image does)
 3. Clone the project and run `jupyter lab` in the `notebooks` directory
 4. Open one of the example notebooks and play with it!
 
