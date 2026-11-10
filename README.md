@@ -38,6 +38,17 @@ docker run -it --rm -p 8888:8888 almond-examples
 
 Then copy the URL shown in the Docker output into your browser.
 
+The image has the same JupyterLab setup as the [`dev.jupyter*` Mill commands](https://almond.sh/docs/dev-from-sources)
+of almond: the [variable inspector](https://github.com/jupyterlab-contrib/jupyterlab-variableInspector)
+(open it with "Open Variable Inspector", from the context menu of a notebook), [Jupyter AI](https://jupyter-ai.readthedocs.io/),
+and the same default settings. Jupyter AI can chat with Claude and Codex, provided their credentials are passed to the
+container, like
+```bash
+docker run -it --rm -p 8888:8888 -e ANTHROPIC_API_KEY -e OPENAI_API_KEY almond-examples
+```
+These come from the [`jupyter`](jupyter) directory, that [`scripts/update-jupyter-setup.sh`](scripts/update-jupyter-setup.sh)
+updates from the almond repository.
+
 The image sets `JDK_JAVA_OPTIONS`, so that the kernels can run Spark (see [the Spark notebook](notebooks/spark.ipynb)).
 To pass Java options of your own to the kernels, like `-Xmx8g`, use `JAVA_TOOL_OPTIONS` rather than
 `JDK_JAVA_OPTIONS` (which would override the options of the image), like
@@ -48,7 +59,8 @@ docker run -it --rm -p 8888:8888 -e JAVA_TOOL_OPTIONS=-Xmx8g almond-examples
 ### Locally on your machine
 To run these notebooks locally:
 1. Install [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/) (along with the [`plotly`](https://pypi.org/project/plotly/) Python package, for plotly charts to be shown in JupyterLab,
-   and the `numpy`, `pandas` and `matplotlib` ones, for [the ScalaPy notebook](notebooks/scalapy.ipynb))
+   and the `numpy`, `pandas` and `matplotlib` ones, for [the ScalaPy notebook](notebooks/scalapy.ipynb)).
+   `pip install -r jupyter/requirements.txt` installs the JupyterLab version and extensions of the Docker image.
 2. Install an [Almond kernel](https://almond.sh/docs/quick-start-install) for Scala 2.13, with the id `scala213`, like
    ```bash
    cs launch --use-bootstrap almond:0.15.0 --scala 2.13.18 -- --install --id scala213 --display-name "Scala 2.13"
@@ -73,4 +85,4 @@ or with [Mill](https://mill-build.org), like
 On PRs, CI only runs the notebooks affected by the PR, using
 [Mill selective execution](https://mill-build.org/mill/large/selective-execution.html): each module of
 [`build.mill`](build.mill) depends on the files its notebooks use, and on those all notebook runs use
-(`build.mill`, the `Dockerfile`, `scripts/run-notebooks.sc` and the CI workflow).
+(`build.mill`, the `Dockerfile`, `jupyter/`, `scripts/run-notebooks.sc` and the CI workflow).

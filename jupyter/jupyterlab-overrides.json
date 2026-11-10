@@ -1,0 +1,18 @@
+{
+  "@jupyterlab/apputils-extension:themes": {
+    "adaptive-theme": true
+  },
+  "@jupyterlab/codemirror-extension:plugin": {
+    "defaultConfig": {
+      "indentUnit": "2"
+    }
+  },
+  "@jupyterlab/apputils-extension:notification": {
+    "checkForUpdates": false,
+    "fetchNews": "false"
+  },
+  "@jupyterlab/completer-extension:manager": {
+    "autoCompletion": true,
+    "providerTimeout": 3000
+  }
+}
