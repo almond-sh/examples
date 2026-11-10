@@ -59,6 +59,7 @@ object NotebookModule {
   def common = Seq(
     BuildCtx.workspaceRoot / "build.mill",
     BuildCtx.workspaceRoot / "Dockerfile",
+    BuildCtx.workspaceRoot / "jupyter",
     BuildCtx.workspaceRoot / "scripts" / "run-notebooks.sc",
     BuildCtx.workspaceRoot / ".github" / "workflows" / "notebooks.yml"
   )
