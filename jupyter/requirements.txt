@@ -491,7 +491,7 @@ six==1.17.0
     # via
     #   python-dateutil
     #   rfc3339-validator
-soupsieve==2.9.2
+soupsieve==4.0
     # via beautifulsoup4
 sse-starlette==3.4.11
     # via mcp
