@@ -339,7 +339,7 @@ notebook-shim==0.2.4
     #   notebook
 openapi-pydantic==0.5.1
     # via fastmcp-slim
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
     # via fastmcp-slim
 overrides==7.7.0 ; python_full_version < '3.12'
     # via jupyter-server
