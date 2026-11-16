@@ -513,7 +513,7 @@ tomli==2.4.1 ; python_full_version < '3.11'
     #   cyclopts
     #   jupyter-builder
     #   jupyterlab
-tornado==6.6
+tornado==6.6.1
     # via
     #   ipykernel
     #   jupyter-client
